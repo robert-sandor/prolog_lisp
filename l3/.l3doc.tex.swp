@@ -1,0 +1,51 @@
+\documentclass[11pt]{article}
+%Gummi|065|=)
+\title{\textbf{Lisp programming using Map functions L3}}
+\author{Robert Krisztian Sandor, group 927}
+\date{7.1.2016}
+
+\usepackage{amsmath}
+
+\begin{document}
+
+\maketitle
+
+\textbf{6}. Write a function that returns the depth of a list.
+
+\textbf{Mathematical Models} \\
+
+\[
+maxdepth(l) = 
+\left \{
+	\begin{array}{ll}
+		1 + max(\; \bigcup_{i=1}^{n}maxdepth(l_i) \;) & if \; l = (l_1, ..., l_n) \\
+		0 & otherwise \\
+	\end{array}
+\right.
+\]
+
+\textbf{Meaning of predicates. Flow models. Source Code}
+
+\begin{verbatim}
+; max_depth(l : List)
+; l - List of atoms and lists
+(defun max_depth (l)
+  (cond
+    ((atom l) 0)
+    (t (1+ (apply #'max (mapcar #'max_depth l))))
+    )
+  )
+\end{verbatim}
+
+\textbf{Examples}
+\begin{verbatim}
+
+[2]> (max_depth `(1 (2 (3 (4)))))
+4
+
+[3]> (max_depth `(1 (2 (3 (4 (5 (6)))) (3 (4)))))
+6
+
+\end{verbatim}
+
+\end{document}

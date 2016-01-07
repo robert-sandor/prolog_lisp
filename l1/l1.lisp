@@ -5,16 +5,20 @@
 ;  d. Write a function to reverse a list.
 
 ; a
+; product_list(l : List)
+; l - list of any elements
 (defun product_list (l)
-    (cond
-      ((null l) 1)
-      ((numberp (car l)) (* (car l) (product_list (cdr l))))
-      ((listp (car l)) (* (product_list (car l)) (product_list (cdr l))))
-      (t 1)
+  (cond
+    ((null l) 1)
+    ((numberp (car l)) (* (car l) (product_list (cdr l))))
+    ((listp (car l)) (* (product_list (car l)) (product_list (cdr l))))
+    (t 1)
     )
-)
+  )
 
 ; b
+; qsort(l : List)
+; l - list of numerical atoms
 (defun qsort (l)
   (cond
     ((null l) nil)
@@ -26,6 +30,9 @@
     )
   )
 
+; listl(e : Integer, l : List)
+; e - number to compare to
+; l - list of numerical atoms
 (defun listl (e l)
   (cond
     ((or (null e) (null l)) nil)
@@ -34,16 +41,21 @@
     )
   )
 
-
+; listl(e : Integer, l : List)
+; e - number to compare to
+; l - list of numerical atoms
 (defun listge (e l)
-(cond
-  ((or (null e) (null l)) nil)
-  ((>= e (car l)) (listge e (cdr l)))
-  (t (cons (car l) (listge e (cdr l))))
+  (cond
+    ((or (null e) (null l)) nil)
+    ((>= e (car l)) (listge e (cdr l)))
+    (t (cons (car l) (listge e (cdr l))))
+    )
   )
-)
 
 ; c
+; exists(e : Atom, l : List)
+; e - Atom to be searched for
+; l - list to search in
 (defun exists (e l)
   (cond
     ((or (null e) (null l)) nil)
@@ -52,6 +64,8 @@
     )
   )
 
+; merge_sets(a : List, b : List)
+; a, b - sets of elements
 (defun merge_sets (a b)
   (cond
     ((null a) b)
@@ -62,6 +76,8 @@
   )
 
 ; d
+; reverse_list(l : List)
+; l - list of any elements
 (defun reverse_list (l)
   (cond
     ((null l) nil)
