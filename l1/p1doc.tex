@@ -1,0 +1,94 @@
+\documentclass[11pt]{article}
+%Gummi|065|=)
+\title{\textbf{Prolog Lists P1}}
+\author{Robert Krisztian Sandor, group 927}
+\date{8.10.2015}
+\begin{document}
+
+\maketitle
+
+\textbf{9}. a. Transform a list in a set, in the order of the last appearance. E.g.: [1,2,3,1,2] is transformed in [3,1,2]. \\
+
+b. Define a predicate to determine the greatest common divisor of all numbers in a list. \\
+
+\textbf{Mathematical Models}
+
+\[
+exists(e, l_1, ..., l_n) = 
+\left \{
+	\begin{array}{ll}
+		false & if n = 0 \\
+		true & if e = l_1 \\
+		exists(e, l_2, ..., l_n) & otherwise
+	\end{array}
+\right.
+\]
+
+\[
+transform(l_1, ..., l_n) = 
+\left \{
+	\begin{array}{ll}
+		transform(l_2, ..., l_n) & if exists(l_1, l_2, ..., l_n) \\
+		l_1 \cup transform(l_2, ..., l_n) & otherwise
+	\end{array}
+\right.
+\]
+
+\textbf{Meaning of predicates. Flow models. Source Code}
+
+\begin{verbatim}
+% exists(L : List, E : Atom)
+% L - list of atoms
+% E - an atom
+% true - if E exists in L, false otherwise
+% flow model (i, i)
+exists([H | _], E) :- E = H, !.
+exists([_ | T], E) :- exists(T, E).
+
+% transform(L : List, R : Set)
+% L - list of atoms
+% R - resulting set
+% flow model (i, i), (i, o)
+transform([], []).
+transform([H | T], R) :-
+    exists(T, H), !,
+    transform(T, R).
+transform([H | T], [H | R]) :- transform(T, R).
+
+% gcd(X : Integer, Y : Integer, D : Integer)
+% X, Y - numerical atoms
+% D - gcd of X and Y
+% flow model (i, i, i), (i, i, o)
+gcd(X, 0, X) :- !.
+gcd(0, X, X) :- !.
+gcd(X, Y, D) :- X =< Y, !, Z is Y - X, gcd(X, Z, D).
+gcd(X, Y, D) :- gcd(Y, X, D).
+
+% gcd_list(L : List, R : Integer)
+% L - list of numerical atoms
+% R - gcd of all numerical atoms from L
+% flow model (i, i), (i, o)
+gcd_list([E], E) :- !.
+gcd_list([H1, H2 | T], R) :- gcd(H1, H2, D), gcd_list([D | T], R).
+\end{verbatim}
+
+\textbf{Examples}
+\begin{verbatim}
+?- exists([1,2,3],1).
+true.
+
+?- exists([1,2,3],4).
+false.
+
+?- transform([1,2,3,1,2],Set).
+Set = [3, 1, 2].
+
+?- gcd(32, 8, Div).
+Div = 8.
+
+?- gcd_list([2, 4, 6, 8, 16, 20], Div).
+Div = 2.
+
+\end{verbatim}
+
+\end{document}
