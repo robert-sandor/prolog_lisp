@@ -17,8 +17,8 @@ b. Define a predicate to determine the greatest common divisor of all numbers in
 exists(e, l_1, ..., l_n) = 
 \left \{
 	\begin{array}{ll}
-		false & if n = 0 \\
-		true & if e = l_1 \\
+		false & if \; n = 0 \\
+		true & if \; e = l_1 \\
 		exists(e, l_2, ..., l_n) & otherwise
 	\end{array}
 \right.
@@ -28,7 +28,7 @@ exists(e, l_1, ..., l_n) =
 transform(l_1, ..., l_n) = 
 \left \{
 	\begin{array}{ll}
-		transform(l_2, ..., l_n) & if exists(l_1, l_2, ..., l_n) \\
+		transform(l_2, ..., l_n) & if \; exists(l_1, l_2, ..., l_n) \\
 		l_1 \cup transform(l_2, ..., l_n) & otherwise
 	\end{array}
 \right.

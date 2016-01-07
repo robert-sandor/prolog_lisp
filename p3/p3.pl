@@ -1,6 +1,10 @@
 % 10. Given a list of integer numbers. Remove all sub-lists formed from
 %     decreasing elements.
 
+% remove_decreasing(L : List, R : List)
+% L - list of numerical atoms
+% R - resulting list
+% flow model (i, i), (i, o)
 remove_decreasing([], []) :- !.
 remove_decreasing([E], [E]) :- !.
 remove_decreasing([X, Y], []) :- X > Y, !.

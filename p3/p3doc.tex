@@ -1,0 +1,58 @@
+\documentclass[11pt]{article}
+%Gummi|065|=)
+\title{\textbf{List Processing in Prolog P2}}
+\author{Robert Krisztian Sandor, group 927}
+\date{6.11.2015}
+\begin{document}
+
+\maketitle
+
+\textbf{10}. Given a list of integer numbers. Remove all sub-lists formed from decreasing elements. \\
+
+\textbf{Mathematical Models}
+
+\[
+removedec(l_1, ..., l_n) = 
+\left \{
+	\begin{array}{ll}
+		empty list & if \; n = 0 \; or \; if \; n = 2 \; and \; l_1 > l_2 \\
+		l_1 & if \; n = 1 \\
+		removedec(l_3, ..., l_n) & if \; l_1 > l_2 \; and \; l_2 < l_3 \\
+		removedec(l_2, ..., l_n) & if \; l_1 > l_2 \; and \; l_2 > l_3 \\
+		l_1 \cup removedec(l_2, ..., l_n) & otherwise
+	\end{array}
+\right.
+\]
+
+\textbf{Meaning of predicates. Flow models. Source Code}
+
+\begin{verbatim}
+% remove_decreasing(L : List, R : List)
+% L - list of numerical atoms
+% R - resulting list
+% flow model (i, i), (i, o)
+remove_decreasing([], []) :- !.
+remove_decreasing([E], [E]) :- !.
+remove_decreasing([X, Y], []) :- X > Y, !.
+remove_decreasing([X, Y, Z | T], R) :-
+    X > Y,
+    Y < Z,
+    remove_decreasing([Z | T], R), !.
+remove_decreasing([X, Y | T], R) :-
+    X > Y,
+    remove_decreasing([Y | T], R), !.
+remove_decreasing([X | T], [X | R]) :- remove_decreasing(T, R).
+\end{verbatim}
+
+\newpage
+
+\textbf{Examples}
+\begin{verbatim}
+?- remove_decreasing([1,2,3,2,1,7,6,5,4,3,2,4,5,3,2], Result).
+Result = [1, 2, 4].
+
+?- remove_decreasing([5,4,3,2,1], Result).
+Result = [].
+\end{verbatim}
+
+\end{document}

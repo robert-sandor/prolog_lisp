@@ -1,0 +1,64 @@
+\documentclass[11pt]{article}
+%Gummi|065|=)
+\title{\textbf{Prolog Lists P2}}
+\author{Robert Krisztian Sandor, group 927}
+\date{22.10.2015}
+\begin{document}
+
+\maketitle
+
+\textbf{2}. Determine the predecessor of a number represented as digits in a list. \\
+E.g.: [1 9 3 6 0 0] to [1 9 3 5 9 9] \\
+
+\textbf{Mathematical Models}
+
+\[
+pred(l_1, ..., l_n, c) = 
+\left \{
+	\begin{array}{ll}
+		9 & if \; n = 1 \; and \; l_1 = 0 \\
+		l_1 - 1 & if \; n = 1 \\
+		pred(l_1, nc) \cup pred(l_2, ..., l_n, nc) & if \; c = 1 \\
+		l_1 \cup pred(l_2, ..., l_n, nc) & otherwise
+	\end{array}
+\right.
+\]
+
+\[
+predecessor(l_1, ..., l_n) = pred(l_1, ..., l_n, 0)
+\]
+
+\textbf{Meaning of predicates. Flow models. Source Code}
+
+\begin{verbatim}
+% predecessor_(L : List, C : Integer, R : List)
+% L - list of numerical atoms (only digits)
+% C - numerical atom representing a carry
+% R - the resulting list
+% flow model (i, i, i), (i, o, o), (i, i, o), (i, o, i)
+predecessor_([E], 1, [9]) :- E is 0, !.
+predecessor_([E], 0, [R]) :- R is E - 1, !.
+predecessor_([H | T], C, [R | RT]) :-
+    predecessor_(T, 1, RT), !,
+    predecessor_([H], C, [R]).
+predecessor_([H | T], 0, [H | R]) :- predecessor_(T, 0, R).
+
+% predecessor(L : List, R : List)
+% wrapper for predecessor_
+% L - list of numerical atoms (only digits)
+% R - the resulting list
+% flow model (i, i), (i, o)
+predecessor(L, R) :- predecessor_(L, 0, R).
+\end{verbatim}
+
+\textbf{Examples}
+\begin{verbatim}
+?- predecessor([1,9,3,6,0,0], Pred).
+Pred = [1, 9, 3, 5, 9, 9].
+
+?- predecessor([1,9,3,6,0,5], Pred).
+Pred = [1, 9, 3, 6, 0, 4].
+
+\end{verbatim}
+
+\end{document}

@@ -1,0 +1,122 @@
+\documentclass[11pt]{article}
+%Gummi|065|=)
+\title{\textbf{Using bactraking in Prolog P4}}
+\author{Robert Krisztian Sandor, group 927}
+\date{20.11.2015}
+
+\usepackage{amsmath}
+
+\begin{document}
+
+\maketitle
+
+\textbf{12}. Are given N points in a plan (through their coordinates). Determine all sub-sets of collinear points. \\
+
+\textbf{Mathematical Models}
+
+\[
+subset(l_1, ..., l_n, c) = 
+\left \{
+	\begin{array}{ll}
+		empty list & if \; n = 0 \; or \; c = 0 \\
+		l_1 \cup subset(l_2, ..., l_n, c - 1) & if \; c > 0 \\
+		subset(l_2, ..., l_n, n) & if \; c > 0
+	\end{array}
+\right.
+\]
+
+\[
+collinear(a, b, m, n, x, y) = 
+\left \{
+	\begin{array}{ll}
+		true & if \; (n-b)*(x-m)=(y-n)*(m-a) \\
+		false & otherwise
+	\end{array}
+\right.
+\]
+
+\begin{multline*}
+getcol(x_1, x_2, y_1, y_2, p_{11}, p_{12} ..., p_{n1}, p_{n2}) = \\ 
+\left \{
+	\begin{array}{ll}
+		(x_1, x_2, y_1, y_2) & if \; n = 0 \\
+		(p_{11}, p_{12}) \cup getcol(x_1, x_2, y_1, y_2, p_{21}, p_{22} ..., p_{n1}, p_{n2}) &
+		if \; collinear(x_1, x_2, y_1, y_2, p_{11}, p_{12}) \\
+		getcol(x_1, x_2, y_1, y_2, p_{21}, p_{22} ..., p_{n1}, p_{n2}) & otherwise
+	\end{array}
+\right.
+\end{multline*}
+
+\begin{multline*}
+genlist((p_{11}, p_{12}), ..., (p_{n1}, p_{n2})) = getcol((x_1, x_2), (y_1, y_2), (p_{11}, p_{12}) ..., (p_{n1}, p_{n2})) \\
+where \; ((x_1, x_2), (y_1, y_2)) = subset((p_{11}, p_{12}), ..., (p_{n1}, p_{n2}))
+\end{multline*}
+
+\newpage
+
+\textbf{Meaning of predicates. Flow models. Source Code}
+
+\begin{verbatim}
+% subset(L : list, N : Integer, R : List, Rest : List)
+% L - list of atoms
+% N - length of the resulting list
+% R - resulting list
+% Rest - L without the elements from R
+% flow model (i, i, o, o)
+subset([],0,[],[]).
+subset([H | T], N, [H | R], Rest) :-
+    N1 is N - 1,
+    subset(T, N1, R, Rest).
+subset([H | T], N, R, [H | Rest]) :-
+    subset(T, N, R, Rest).
+
+% collinear(X : List, Y : List, Z : List)
+% X, Y, Z - list of two numerical atoms, representing a point in plane
+% true if X, Y, Z are collinear, false otherwise
+% flow model (i, i, i)
+collinear([A, B], [M, N], [X, Y]) :-
+    P is (N - B)*(X - M),
+    Q is (Y - N)*(M - A),
+    P is Q.
+
+% getcol(X : List, Y : List, L : List, R : List)
+% X, Y - list of two numerical atoms, representing a point in plane
+% L - list of lists of two numerical atoms, representing points in plane
+% R - list of points collinear to X and Y
+% flow model (i, i, i, o), (i, i, i, i)
+getcol(X, Y, [], [X, Y]) :- !.
+getcol(X, Y, [H | T], [H | R]) :-
+    collinear(X, Y, H),
+    getcol(X, Y, T, R).
+getcol(X, Y, [_ | T], R) :-
+    getcol(X, Y, T, R).
+
+% genlist(L : List, R : List)
+% L - list of lists of two numerical atoms, representing points in plane
+% R - resulting list
+% flow model (i, o) 
+genlist(L, R) :-
+    subset(L, 2, [X, Y], Rest),
+    getcol(X, Y, Rest, R).
+\end{verbatim}
+
+\textbf{Examples}
+\begin{verbatim}
+?- genlist([[1,2],[2,4],[3,6],[4,5],[8,10]], Result).
+Result = [[3, 6], [1, 2], [2, 4]] ;
+Result = [[1, 2], [2, 4]] ;
+Result = [[2, 4], [1, 2], [3, 6]] ;
+Result = [[1, 2], [3, 6]] ;
+Result = [[1, 2], [4, 5]] ;
+Result = [[1, 2], [8, 10]] ;
+Result = [[1, 2], [2, 4], [3, 6]] ;
+Result = [[2, 4], [3, 6]] ;
+Result = [[2, 4], [4, 5]] ;
+Result = [[2, 4], [8, 10]] ;
+Result = [[3, 6], [4, 5]] ;
+Result = [[3, 6], [8, 10]] ;
+Result = [[4, 5], [8, 10]] ;
+false.
+\end{verbatim}
+
+\end{document}
